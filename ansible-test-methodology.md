@@ -227,21 +227,37 @@ Record whether containers were recreated, whether Docker restarted, and
 whether endpoint checks recovered. Do not infer repeat-run behavior from the
 first successful deployment.
 
-## 7. Update the reports
+## 7. Update all relevant reports
 
-For each OS/image test, update the issue log with:
+After every new OS, image, distribution, or deployment-environment test,
+update all reports affected by its results before considering the test
+complete:
 
-- A complete environment record and test date.
-- A per-OS finding summary and explicit issue scope.
-- Baseline result using upstream roles only.
-- Each retry's OS-specific changes and full playbook recap.
-- Repeat-run results and container/service verification.
-- Findings that were not reproduced or were not tested.
-- The relevant OS-specific override paths and upstream references.
+- **Ansible deployment report:** Keep the environment matrix and verification
+  results current. Add a concise finding row for each issue, state only the
+  distributions where it was observed in the observed-scope column, and
+  distinguish OS-independent findings from distribution-specific ones.
+- **Issue reports:** Create one detailed report under
+  `issue-reports/` for every new issue, linked from the general report.
+  Update existing issue reports when new evidence changes their observed
+  scope, status, proposed fix, or verification. Include baseline evidence,
+  retry results, relevant recaps, limits, and the OS-specific override or
+  upstream reference. Keep the general report concise; do not duplicate the
+  detailed diagnosis there.
+- **OpenTofu report:** Add each provisioned test environment, including OS,
+  image name/UUID, flavor, and provisioning outcome. Report tested
+  environments rather than which VM happens to be active. Keep previous
+  tested image IDs as commented options in `main.tf`.
+- **Methodology:** Update the procedure if the test reveals a reusable
+  improvement, a new prerequisite, or a recovery step that should be applied
+  in future OS tests.
 
-Assign each newly observed issue a unique ID. Keep OS-specific fixes in their
-own override trees. Update the OpenTofu report if the current VM, image,
-instance ID, port, fixed IP, or floating IP changes.
+For each test, record its date, pinned upstream commit, clean upstream-only
+baseline, each OS-specific retry and full playbook recap, repeat-run result,
+service/container and endpoint verification, and anything not reproduced or
+not tested. Assign each newly observed issue a unique ID. Keep OS-specific
+fixes in their own override trees, and never describe a baseline failure as
+fixed until the corresponding behavior is verified.
 
 ## Rocky Linux 9.8 clean retest performed on 2026-10-22
 
