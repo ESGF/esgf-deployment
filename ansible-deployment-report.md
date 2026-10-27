@@ -1,6 +1,6 @@
 # ESGF Ansible Deployment Issue Log
 
-**Last updated:** 2026-10-22
+**Last updated:** 2026-10-27
 **Scope:** Tests performed and issues found while deploying the upstream
 `esgf-docker` Ansible playbook.
 
@@ -22,7 +22,7 @@ on which its underlying code might be present.
 
 | OS / scope | Findings and evidence |
 |---|---|
-| Rocky Linux 8.10 | ANS-001 and ANS-006 were observed. ANS-003 occurred on a repeat run. ANS-002 occurred with TLS omitted; the Rocky 8 proxy override allowed the HTTP-only deployment. |
+| Rocky Linux 8.10 | The clean upstream-only run reproduced ANS-001 at THREDDS startup. Rocky 8 fixes then completed deployment; ANS-003 was reproduced on a repeat run. ANS-002 has also been observed with TLS omitted and is addressed by the Rocky 8 proxy override. ANS-006 was observed in the initial check-mode test. |
 | Rocky Linux 9.8 | The upstream-only baseline reproduced ANS-007. After its pip fix, the upstream proxy reproduced ANS-002. The Rocky 9 proxy override allowed deployment. ANS-003 occurred on a repeat run. ANS-001 did not occur: all containers started with the upstream `MountFlags=shared` drop-in present. ANS-006 was not tested. |
 | OS-independent configuration/test setup | ANS-004 is an upstream YAML defect confirmed by source inspection. ANS-005 concerns Ansible variable discovery from the external Futura playbook. Neither was validated in a customized deployment. |
 
@@ -30,7 +30,7 @@ on which its underlying code might be present.
 
 | ID | Issue | OS scope of observed evidence | Classification | Status |
 |---|---|---|---|---|
-| ANS-001 | Docker containers fail under upstream `MountFlags=shared` drop-in | Rocky Linux 8.10 reproduced; Rocky Linux 9.8 not reproduced with drop-in present | Runtime/deployment bug | Rocky 8 workaround applied; Rocky 9 requires no workaround based on this test |
+| ANS-001 | Docker containers fail under upstream `MountFlags=shared` drop-in | Rocky Linux 8.10 reproduced on clean upstream baseline; Rocky Linux 9.8 not reproduced with drop-in present | Runtime/deployment bug | Rocky 8 workaround applied; no Rocky 9 workaround needed based on tested run |
 | ANS-002 | Proxy file-permission task fails when TLS files are omitted | Reproduced on Rocky Linux 8.10 and 9.8 with no TLS | Configuration bug | OS-specific Futura workarounds applied; upstream fix proposed |
 | ANS-003 | Re-running Ansible recreates every service container | Reproduced on Rocky Linux 8.10 and 9.8 | Availability/idempotence issue | Reproduced on both; upstream fix proposed, not applied |
 | ANS-004 | Duplicate `data_datasets` key in example group variables | OS-independent upstream source inspection; not exercised in a deployment | Configuration defect | Confirmed in upstream file; no customized data-node run yet |
@@ -43,9 +43,10 @@ on which its underlying code might be present.
 ### ANS-001 — Docker mount namespace setting prevents container startup
 
 - **Classification:** Runtime/deployment bug.
-- **OS scope:** Reproduced on Rocky Linux 8.10. Not reproduced on the clean
-  Rocky Linux 9.8 VM: the unmodified upstream `MountFlags=shared` drop-in
-  remained present while all six containers started and the HTTP checks passed.
+- **OS scope:** Reproduced on a clean Rocky Linux 8.10 VM using upstream roles
+  only. Not reproduced on the clean Rocky Linux 9.8 VM: the unmodified
+  upstream `MountFlags=shared` drop-in remained present while all six
+  containers started and the HTTP checks passed.
 - **Symptom:** runc reported that `/usr/local/bin/tini` did not exist while
   starting the THREDDS container.
 - **Evidence:** The role had created
@@ -65,6 +66,12 @@ on which its underlying code might be present.
   the drop-in was absent. On Rocky Linux 9.8, the original drop-in was retained
   and all six containers started; this issue is therefore not recorded as
   reproduced on Rocky Linux 9.8.
+- **Baseline evidence:** The clean Rocky Linux 8.10 upstream-only play stopped
+  at `Start THREDDS container` with runc reporting
+  `stat /usr/local/bin/tini: no such file or directory`; recap:
+  `ok=19`, `changed=11`, `unreachable=0`, `failed=1`, `skipped=11`.
+- **Post-fix evidence:** With the Rocky 8 override, the deployment completed
+  with `ok=49`, `changed=18`, `unreachable=0`, `failed=0`, `skipped=29`.
 - **Files:** Rocky 8 Futura
   [`docker override`](./ansible/overrides/rocky8/roles/docker/tasks/main.yml);
   upstream reference `esgf-docker/deploy/ansible/roles/docker/tasks/main.yml`.
@@ -113,8 +120,7 @@ on which its underlying code might be present.
   completed with `ok=50`, `changed=10`, `unreachable=0`, `failed=0`; all six
   container IDs changed between runs, confirming recreation. All HTTP checks
   passed after the Rocky 9 repeat run.
-- **Scope note:** Rocky Linux 8.10 upstream-only first-run results were not
-  recorded. Service interruption duration was not measured.
+- **Scope note:** Service interruption duration was not measured.
 
 ### ANS-004 — Duplicate `data_datasets` definition in upstream example
 
@@ -200,8 +206,12 @@ on which its underlying code might be present.
 
 ## 5. Deployment and service verification
 
-The Rocky Linux 8.10 deployment completed with `ok=48`, `changed=13`,
-`unreachable=0`, `failed=0`, and `skipped=30`.
+The clean Rocky Linux 8.10 upstream-only deployment failed at THREDDS startup
+as recorded in ANS-001 (`ok=19`, `changed=11`, `unreachable=0`, `failed=1`,
+`skipped=11`). After applying the Rocky 8 fixes, deployment completed with
+`ok=49`, `changed=18`, `unreachable=0`, `failed=0`, `skipped=29`. The repeat
+run completed with `ok=47`, `changed=6`, `unreachable=0`, `failed=0`,
+`skipped=31`; all six service container IDs changed.
 
 For Rocky Linux 9.8, the upstream-only baseline failed at Docker SDK
 installation (`ok=8`, `changed=6`, `failed=1`, `skipped=3`). With only the
@@ -213,8 +223,8 @@ Rocky 9-specific fixes, deployment completed with `ok=50`, `changed=13`,
 container IDs changed for all six services. Syntax validation passed.
 
 The six containers (`proxy`, `thredds`, `fileserver`, `solr-master`,
-`solr-slave`, and `search`) ran on Rocky Linux 9.8. The following endpoints
-returned HTTP 200:
+`solr-slave`, and `search`) ran on both Rocky Linux 8.10 and 9.8 after their
+respective fixes. The following endpoints returned HTTP 200 on both:
 
 - `/health`
 - `/thredds/catalog/catalog.html`

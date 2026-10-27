@@ -50,6 +50,9 @@ Before provisioning, record:
 
 Keep credentials out of the report and source control. Confirm that the guest
 image's minimum resource requirements fit the selected flavor.
+Keep previously tested image IDs as commented options next to the active
+`image_id` default in OpenTofu `main.tf`; change only the active selection
+when switching test OSes.
 
 ## 2. Provision a clean VM
 
