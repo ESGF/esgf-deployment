@@ -59,6 +59,8 @@ The `esgf-docker` Ansible deployment results are documented in the
 clean-VM, upstream-baseline-first process is in the
 [Ansible test methodology](./ansible-test-methodology.md). The Futura-local
 playbook, inventory, and OS-specific role overrides are in [`ansible/`](./ansible/).
+The prioritized next scenarios are in the
+[deployment testing roadmap](./deployment-testing-roadmap.md).
 
 The upstream `esgf-docker` checkout is treated as a read-only reference. See
 the reports for reproducible commands and Rocky Linux 8.10/9.8 test results.
