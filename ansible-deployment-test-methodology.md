@@ -1,4 +1,4 @@
-# Ansible deployment test methodology
+# Ansible Deployment Test Methodology
 
 ## Purpose
 
@@ -14,7 +14,7 @@ VM and unmodified upstream roles. Fixes discovered on one OS must not leak
 into another OS's baseline or override tree.
 
 The corresponding observations and issue-by-issue results are maintained in
-the [Ansible deployment issue log](./ansible-deployment-report.md).
+the [Ansible deployment test results](./ansible-deployment-test-results.md).
 
 ## Test rules
 

@@ -33,4 +33,4 @@ Both baseline plays ran without upstream `group_vars`. No variables were
 staged or altered, and data mount/dataset behavior remains unvalidated.
 
 The repeatable baseline-first process is described in the
-[`Ansible test methodology`](../ansible-test-methodology.md).
+[`Ansible deployment test methodology`](../ansible-deployment-test-methodology.md).

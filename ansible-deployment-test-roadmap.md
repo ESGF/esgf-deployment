@@ -1,4 +1,4 @@
-# ESGF node deployment testing roadmap
+# Ansible Deployment Test Roadmap
 
 FUTURA tests the upstream `esgf-docker` Ansible deployment across useful
 configurations and environments, then reports reproducible evidence and
@@ -23,7 +23,7 @@ deployments with no datasets and mutable `latest` image tags.
   behavior, and untested areas.
 - After each test, update the general deployment report, affected detailed
   finding reports, and OpenTofu tested-environments report as described in
-  the [test methodology](./ansible-test-methodology.md).
+  the [test methodology](./ansible-deployment-test-methodology.md).
 - Test each scenario on one representative environment first; repeat on
   another OS only when the comparison is useful. Do not build a full
   OS-by-configuration matrix.

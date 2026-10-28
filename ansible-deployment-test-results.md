@@ -1,4 +1,4 @@
-# ESGF Ansible Deployment Issue Log
+# ESGF Ansible Deployment Test Results
 
 **Last updated:** 2026-10-27
 **Purpose:** Test ESGF node deployments using the tools provided by
@@ -16,7 +16,7 @@ linked below.
 
 Both OS tests began with clean VMs and upstream roles. The reproducible
 baseline-first procedure is in the
-[`Ansible test methodology`](./ansible-test-methodology.md).
+[`Ansible deployment test methodology`](./ansible-deployment-test-methodology.md).
 
 ## 2. Findings
 

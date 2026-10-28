@@ -2,7 +2,11 @@
 
 ## Overview
 
-This document describes the requirements and information needed to deploy an ESGF-NG node using the Ansible deployment provided by [`esgf-docker`](https://github.com/ESGF/esgf-docker). The current FUTURA test setup and observed issues are documented in the [ESGF Ansible deployment issue log](./ansible-deployment-report.md).
+This document describes the requirements and information needed to deploy an
+ESGF-NG node using the Ansible deployment provided by
+[`esgf-docker`](https://github.com/ESGF/esgf-docker). The FUTURA test setup
+and observed issues are documented in the
+[ESGF Ansible deployment test results](./ansible-deployment-test-results.md).
 
 The deployment runs ESGF-NG services as Docker containers on one or more site-provided hosts.
 
@@ -159,8 +163,9 @@ Basic validation should include:
 ## Known issues and deployment caveats
 
 The following issues have been observed or identified during the FUTURA
-deployment work. See the [issue log](./ansible-deployment-report.md)
-for evidence, workarounds, verification, and scope:
+deployment work. See the
+[deployment test results](./ansible-deployment-test-results.md) for evidence,
+workarounds, verification, and scope:
 
 * On Rocky Linux 8.10, the upstream Docker role's `MountFlags=shared` systemd
   drop-in prevented containers from starting. The FUTURA test removes this
