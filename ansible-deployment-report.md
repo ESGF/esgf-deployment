@@ -1,8 +1,11 @@
 # ESGF Ansible Deployment Issue Log
 
 **Last updated:** 2026-10-27
-**Scope:** Tests and findings from deploying the upstream `esgf-docker`
-Ansible playbook.
+**Purpose:** Test ESGF node deployments using the tools provided by
+`esgf-docker`, across configurations and environments, and provide evidence
+and proposed fixes for issues to be addressed in the upstream repository.
+This report summarizes deployment-test findings; detailed investigation is
+linked below.
 
 ## 1. Tested environments
 
@@ -22,13 +25,13 @@ establish that a finding cannot occur on other systems.
 
 | ID | Finding | Observed scope | Status | Detailed report |
 |---|---|---|---|---|
-| ANS-001 | THREDDS container startup fails with upstream `MountFlags=shared` | Rocky Linux 8.10 | Rocky 8 workaround applied | [ANS-001](./issue-reports/ANS-001-mount-flags-container-startup.md) |
-| ANS-002 | Proxy permission task fails when TLS files are omitted | Rocky Linux 8.10 and Rocky Linux 9.8 | OS-specific workarounds applied; upstream fix proposed | [ANS-002](./issue-reports/ANS-002-proxy-tls-permissions.md) |
-| ANS-003 | Unchanged playbook rerun recreates service containers | Rocky Linux 8.10 and Rocky Linux 9.8 | Reproduced; upstream fix proposed, not applied | [ANS-003](./issue-reports/ANS-003-container-recreation.md) |
-| ANS-004 | Duplicate `data_datasets` key in upstream example variables | OS-independent (source inspection) | Confirmed by inspection; runtime behavior untested | [ANS-004](./issue-reports/ANS-004-duplicate-data-datasets.md) |
-| ANS-005 | Futura-local playbook does not discover upstream sibling `group_vars` | OS-independent (test setup) | Documented caveat; no group variables loaded | [ANS-005](./issue-reports/ANS-005-group-vars-discovery.md) |
-| ANS-006 | Initial check-mode run requires an unavailable Docker daemon | Rocky Linux 8.10 | Reproduced; no code change | [ANS-006](./issue-reports/ANS-006-check-mode-docker-daemon.md) |
-| ANS-007 | Rocky 9 host lacks pip prerequisite for Docker SDK | Rocky Linux 9.8 | Rocky 9 workaround applied; upstream fix proposed | [ANS-007](./issue-reports/ANS-007-rocky9-pip-prerequisite.md) |
+| ESGF-DEP-001 | THREDDS container startup fails with upstream `MountFlags=shared` | Rocky Linux 8.10 | Rocky 8 workaround applied | [ESGF-DEP-001](./issue-reports/ESGF-DEP-001-mount-flags-container-startup.md) |
+| ESGF-DEP-002 | Proxy permission task fails when TLS files are omitted | Rocky Linux 8.10 and Rocky Linux 9.8 | OS-specific workarounds applied; upstream fix proposed | [ESGF-DEP-002](./issue-reports/ESGF-DEP-002-proxy-tls-permissions.md) |
+| ESGF-DEP-003 | Unchanged playbook rerun recreates service containers | Rocky Linux 8.10 and Rocky Linux 9.8 | Reproduced; upstream fix proposed, not applied | [ESGF-DEP-003](./issue-reports/ESGF-DEP-003-container-recreation.md) |
+| ESGF-DEP-004 | Duplicate `data_datasets` key in upstream example variables | OS-independent (source inspection) | Confirmed by inspection; runtime behavior untested | [ESGF-DEP-004](./issue-reports/ESGF-DEP-004-duplicate-data-datasets.md) |
+| ESGF-DEP-005 | Futura-local playbook does not discover upstream sibling `group_vars` | OS-independent (test setup) | Documented caveat; no group variables loaded | [ESGF-DEP-005](./issue-reports/ESGF-DEP-005-group-vars-discovery.md) |
+| ESGF-DEP-006 | Initial check-mode run requires an unavailable Docker daemon | Rocky Linux 8.10 | Reproduced; no code change | [ESGF-DEP-006](./issue-reports/ESGF-DEP-006-check-mode-docker-daemon.md) |
+| ESGF-DEP-007 | Rocky 9 host lacks pip prerequisite for Docker SDK | Rocky Linux 9.8 | Rocky 9 workaround applied; upstream fix proposed | [ESGF-DEP-007](./issue-reports/ESGF-DEP-007-rocky9-pip-prerequisite.md) |
 
 ## 3. Deployment verification
 

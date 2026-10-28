@@ -1,4 +1,4 @@
-# ANS-007 — Rocky Linux 9 lacks the pip prerequisite for the Docker SDK
+# ESGF-DEP-007 — Rocky Linux 9 lacks the pip prerequisite for the Docker SDK
 
 ## Summary
 
@@ -41,7 +41,7 @@ FUTURA override: [`Rocky 9 Docker role`](../ansible/overrides/rocky9/roles/docke
 ## Verification and limits
 
 After adding only the pip prerequisite, the play passed Docker setup and
-exposed ANS-002 in the proxy role (`ok=46`, `changed=22`, `failed=1`,
+exposed ESGF-DEP-002 in the proxy role (`ok=46`, `changed=22`, `failed=1`,
 `skipped=29`). With the pip fix and Rocky 9 no-TLS proxy guard, deployment
 completed with `ok=50`, `changed=13`, `unreachable=0`, `failed=0`,
 `skipped=30`.

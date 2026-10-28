@@ -1,4 +1,4 @@
-# ANS-006 — Initial check-mode run cannot handle an absent Docker daemon
+# ESGF-DEP-006 — Initial check-mode run cannot handle an absent Docker daemon
 
 ## Summary
 

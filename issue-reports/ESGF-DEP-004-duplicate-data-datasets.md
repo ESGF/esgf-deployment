@@ -1,4 +1,4 @@
-# ANS-004 — Duplicate `data_datasets` key in upstream example
+# ESGF-DEP-004 — Duplicate `data_datasets` key in upstream example
 
 ## Summary
 

@@ -2,10 +2,16 @@
 
 ## Purpose
 
-This document defines a repeatable way to test the upstream `esgf-docker`
-Ansible deployment on a new guest operating system or version. Each OS test
-starts with a clean VM and the unmodified upstream roles. Fixes discovered on
-one OS must not leak into another OS's baseline or override tree.
+FUTURA's primary objective is to test ESGF node deployments using the
+deployment tools provided by the upstream `esgf-docker` repository across
+different configurations and environments. The work records reproducible
+evidence and proposes fixes for issues so they can be addressed in
+`esgf-docker`; it does not modify that upstream checkout.
+
+This document defines a repeatable way to test an upstream Ansible deployment
+on a new guest operating system or version. Each OS test starts with a clean
+VM and unmodified upstream roles. Fixes discovered on one OS must not leak
+into another OS's baseline or override tree.
 
 The corresponding observations and issue-by-issue results are maintained in
 the [Ansible deployment issue log](./ansible-deployment-report.md).
@@ -255,9 +261,11 @@ complete:
 For each test, record its date, pinned upstream commit, clean upstream-only
 baseline, each OS-specific retry and full playbook recap, repeat-run result,
 service/container and endpoint verification, and anything not reproduced or
-not tested. Assign each newly observed issue a unique ID. Keep OS-specific
-fixes in their own override trees, and never describe a baseline failure as
-fixed until the corresponding behavior is verified.
+not tested. Assign each newly observed deployment finding a unique
+`ESGF-DEP-###` ID. This prefix identifies findings from ESGF deployment
+testing; it does not imply every entry is a confirmed upstream bug. Keep
+OS-specific fixes in their own override trees, and never describe a baseline
+failure as fixed until the corresponding behavior is verified.
 
 ## Rocky Linux 9.8 clean retest performed on 2026-10-22
 
