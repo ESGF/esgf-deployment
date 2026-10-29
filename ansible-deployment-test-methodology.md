@@ -15,6 +15,9 @@ into another OS's baseline or override tree.
 
 The corresponding observations and issue-by-issue results are maintained in
 the [Ansible deployment test results](./ansible-deployment-test-results.md).
+Deployment reports focus on `esgf-docker` behavior. Record a scenario that
+does not reach Ansible as not tested; keep provisioning-tool failures in the
+separate infrastructure report.
 
 ## Test rules
 
@@ -128,6 +131,32 @@ UPSTREAM_ROLES=/path/to/esgf-docker/deploy/ansible/roles
 FUTURA_ANSIBLE=/path/to/futura/esgf-deployment/ansible
 ```
 
+For the data-serving scenario, keep the test's single `data_datasets` entry
+and `data_mounts` in
+`$FUTURA_ANSIBLE/group_vars/data.yml`, which is discoverable relative to the
+inventory. Confirm the resolved variables before deployment:
+
+```sh
+ansible-inventory -i "$FUTURA_ANSIBLE/inventory.ini" --host node01
+```
+
+The tracked test fixture is a small synthetic CF-1.6 NetCDF file. Prepare it
+on the clean host before the upstream-only deployment; this playbook only
+creates the test data and does not apply deployment roles:
+
+```sh
+ansible-playbook -i "$FUTURA_ANSIBLE/inventory.ini" \
+  "$FUTURA_ANSIBLE/prepare-test-data.yml"
+```
+
+The source CDL can regenerate the binary fixture with
+`ncgen -k classic -o test-data/futura-test.nc test-data/futura-test.cdl`.
+Regeneration requires `ncgen` (provided by the `netcdf-bin` package on Debian-
+based systems); the checked-in NetCDF file can be used without regenerating it.
+Do not load the upstream example `group_vars/data.yml` for this scenario: it
+contains the duplicate key tracked in
+[ESGF-DEP-004](./issue-reports/ESGF-DEP-004-duplicate-data-datasets.md).
+
 First validate syntax using upstream roles only:
 
 ```sh
@@ -221,6 +250,15 @@ Record HTTP status for each. Do not count an endpoint as verified based only
 on the Ansible task succeeding. Also record whether TLS, external datasets,
 and any optional service integrations were actually configured and tested.
 
+For the synthetic data-serving scenario, also verify the dataset-specific
+THREDDS catalog, the `fileServer` URL, and an OPeNDAP metadata/data request.
+Download the served file and compare its checksum with the local fixture;
+inspect its NetCDF header/data with `ncdump`. Confirm the host bind mount is
+present in both THREDDS and fileserver containers, read-only, and readable.
+Treat a healthy ESGF search response separately from indexing the synthetic
+dataset: do not claim indexing unless the dataset is registered and appears
+in the search results.
+
 ## 6. Test repeat-run behavior
 
 Once the deployment is complete, capture container IDs and status, run the
@@ -252,8 +290,9 @@ complete:
   detailed diagnosis there.
 - **OpenTofu report:** Add each provisioned test environment, including OS,
   image name/UUID, flavor, and provisioning outcome. Report tested
-  environments rather than which VM happens to be active. Keep previous
-  tested image IDs as commented options in `main.tf`.
+  environments rather than which VM happens to be active. Keep infrastructure
+  provisioning details in this separate report, not in the ESGF deployment
+  results. Keep previous tested image IDs as commented options in `main.tf`.
 - **Methodology:** Update the procedure if the test reveals a reusable
   improvement, a new prerequisite, or a recovery step that should be applied
   in future OS tests.
@@ -267,30 +306,9 @@ testing; it does not imply every entry is a confirmed upstream bug. Keep
 OS-specific fixes in their own override trees, and never describe a baseline
 failure as fixed until the corresponding behavior is verified.
 
-## Rocky Linux 9.8 clean retest performed on 2026-10-22
+## Rocky Linux 9.8 data-serving scenario
 
-The clean test followed the upstream-only baseline sequence:
-
-1. Replaced the VM and stale network port while retaining the floating IP.
-   The new instance is `211d2ba9-bba2-44d7-a041-c83eda83228a`; the fixed IP
-   is `TESTBED_PRIVATE_IP`.
-2. Verified Rocky Linux 9.8 and the new SSH host key against cloud-init
-   console output.
-3. Ran syntax validation and deployment with upstream roles only. It failed
-   at Docker SDK installation because Rocky's `python3-pip` prerequisite was
-   not installed (`ok=8`, `changed=6`, `failed=1`, `skipped=3`).
-4. Added only the pip prerequisite to the Rocky 9 Docker override and reran.
-   Deployment reached the upstream proxy role, where the no-TLS file
-   permissions task failed (`ok=46`, `changed=22`, `failed=1`,
-   `skipped=29`). The five non-proxy containers started with the upstream
-   `MountFlags=shared` drop-in present.
-5. Added the no-TLS condition to the Rocky 9 proxy override. The full run
-   completed (`ok=50`, `changed=13`, `unreachable=0`, `failed=0`,
-   `skipped=30`); all six endpoints returned HTTP 200.
-6. Repeated the playbook; all six service container IDs changed
-   (`ok=50`, `changed=10`, `unreachable=0`, `failed=0`, `skipped=30`).
-   All endpoints returned HTTP 200 after the repeat run.
-
-The `MountFlags=shared` container-start failure was not reproduced on this
-Rocky 9.8 guest. The clean-host check-mode behavior was not tested during this
-retest.
+The Rocky Linux 9.8 data-serving deployment has not been tested. There are no
+Ansible baseline, OS-specific deployment, fixture verification, endpoint, or
+repeat-run results for this scenario. Report it as untested until deployment
+evidence is collected.

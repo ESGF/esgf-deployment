@@ -15,8 +15,12 @@ keys, but loaders can handle duplicates differently; common loaders may
 silently keep only one value. Consequently, a user can lose part of the
 intended dataset configuration without an obvious error.
 
-The deployment tests did not load this file or configure data mounts, so
-impact on an actual customized data node was not verified.
+The deployment tests do not load this upstream example file. The Rocky Linux
+8.10 data-serving test on 2026-10-29 used a separate Futura inventory
+`group_vars/data.yml` with one `data_datasets` key; it successfully generated
+a THREDDS dataset catalog and served a synthetic NetCDF file. This validates
+the single-key configuration path, not how Ansible/YAML handles the duplicate
+key in the upstream example.
 
 ## Fix status and proposed upstream change
 
@@ -27,6 +31,7 @@ similar defects.
 
 ## Verification and limits
 
-The duplicate was confirmed by source inspection only. Validate the corrected
-file with a duplicate-key-aware YAML linter and an Ansible run that resolves
-the expected dataset list before treating runtime behavior as verified.
+The duplicate remains confirmed by source inspection; its runtime handling
+is untested. Validate the upstream file with a duplicate-key-aware YAML
+linter and an Ansible run that resolves the expected dataset list before
+treating this finding as resolved.

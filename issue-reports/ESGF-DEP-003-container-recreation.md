@@ -38,3 +38,9 @@ restarts.
 
 Both repeat runs completed and the service endpoints passed checks afterward.
 The duration of service interruption was not measured.
+
+The Rocky Linux 8.10 data-serving repeat on 2026-10-29 also changed all six
+container IDs (`ok=47`, `changed=6`, `unreachable=0`, `failed=0`,
+`skipped=31`). The dataset catalog and fileServer continued to return HTTP
+200 after the containers were recreated. The interruption duration was not
+measured in this run either.

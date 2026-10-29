@@ -63,3 +63,10 @@ After applying the Rocky 8 override, deployment passed with `ok=49`,
 absent and all six containers ran. The Rocky 9 run passed while retaining the
 drop-in. This finding is recorded as reproduced only on Rocky 8.10 based on
 these tests.
+
+The clean Rocky Linux 8.10 data-serving baseline on 2026-10-29 reproduced
+the same failure at `Start THREDDS container` with the same recap:
+`ok=19`, `changed=11`, `unreachable=0`, `failed=1`, `skipped=11`. With the
+Rocky 8 override, the configured synthetic dataset was served from both
+THREDDS and fileserver; see the
+[data-serving test results](../ansible-deployment-test-results.md#rocky-linux-810-data-serving-scenario--2026-10-29).
