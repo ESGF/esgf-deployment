@@ -306,9 +306,15 @@ testing; it does not imply every entry is a confirmed upstream bug. Keep
 OS-specific fixes in their own override trees, and never describe a baseline
 failure as fixed until the corresponding behavior is verified.
 
-## Rocky Linux 9.8 data-serving scenario
+## Rocky Linux 9.8 data-serving test performed on 2026-10-30
 
-The Rocky Linux 9.8 data-serving deployment has not been tested. There are no
-Ansible baseline, OS-specific deployment, fixture verification, endpoint, or
-repeat-run results for this scenario. Report it as untested until deployment
-evidence is collected.
+The clean Rocky Linux 9.8 data-serving test used upstream roles first. The
+baseline failed at Docker SDK installation because the pip prerequisite was
+missing (`ok=8`, `changed=6`, `failed=1`, `skipped=3`). The existing Rocky 9
+override installed the prerequisite and the Rocky 9 proxy override handled
+the HTTP-only configuration; deployment then passed (`ok=50`, `changed=26`,
+`unreachable=0`, `failed=0`, `skipped=30`). The fixture mount, THREDDS and
+fileserver access, file checksum, OPeNDAP, service endpoints, and repeat-run
+behavior passed verification. The repeat recreated all six service
+containers (`ok=50`, `changed=10`, `failed=0`, `skipped=30`). Detailed
+evidence is in the [deployment test results](./ansible-deployment-test-results.md#rocky-linux-98-data-serving-scenario--2026-10-30).

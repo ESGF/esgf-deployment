@@ -25,6 +25,10 @@ The baseline recap was `ok=8`, `changed=6`, `failed=1`, `skipped=3`. The
 Rocky Linux 8.10 setup passed this task, so the missing package was not
 observed there.
 
+The clean Rocky Linux 9.8 data-serving baseline on 2026-10-30 reproduced the
+same failure with `ok=8`, `changed=6`, `unreachable=0`, `failed=1`,
+`skipped=3`, before any service containers were configured.
+
 ## Fixes and proposed upstream change
 
 The Rocky 9 FUTURA Docker role override installs `python3-pip` before invoking
@@ -45,3 +49,9 @@ exposed ESGF-DEP-002 in the proxy role (`ok=46`, `changed=22`, `failed=1`,
 `skipped=29`). With the pip fix and Rocky 9 no-TLS proxy guard, deployment
 completed with `ok=50`, `changed=13`, `unreachable=0`, `failed=0`,
 `skipped=30`.
+
+In the Rocky Linux 9.8 data-serving test on 2026-10-30, the same Rocky 9
+overrides completed the full deployment with `ok=50`, `changed=26`,
+`unreachable=0`, `failed=0`, `skipped=30`; the synthetic dataset was served
+through THREDDS and fileserver. The higher changed count includes configuring
+the data-serving scenario.

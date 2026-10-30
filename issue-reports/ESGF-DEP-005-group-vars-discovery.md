@@ -5,11 +5,10 @@
 - **Classification:** Test/configuration caveat, not an upstream deployment
   failure.
 - **Observed scope:** Futura-local playbook setup; verified on Rocky Linux
-  8.10.
-- **Status:** Inventory-local workaround verified for the Rocky 8.10
-  data-serving test. Rocky Linux 9.8 variable resolution was not tested.
-  Upstream sibling group variables remain undiscovered by the Futura-local
-  playbook.
+  8.10 and 9.8.
+- **Status:** Inventory-local workaround verified for both data-serving
+  tests. Upstream sibling group variables remain undiscovered by the
+  Futura-local playbook.
 
 ## Details
 
@@ -20,9 +19,8 @@ sibling `group_vars` merely because roles are sourced from that repository.
 
 The data-serving scenario keeps its dataset and mount configuration in
 Futura's inventory-local `group_vars/data.yml`, so the test playbook resolves
-the intended values without relying on upstream sibling files. The Rocky
-Linux 8.10 deployment verified this configuration path. Rocky Linux 9.8
-variable resolution remains untested.
+the intended values without relying on upstream sibling files. Both Rocky
+Linux 8.10 and 9.8 deployments verified this configuration path.
 
 ## Resolution for customized deployments
 
@@ -39,10 +37,11 @@ On 2026-10-29, Futura placed a single-key data configuration in
 `ansible-inventory --host node01` showed the expected `data_mounts` and
 `data_datasets`. The prepared fixture was then visible in both THREDDS and
 fileserver containers and appeared in the generated dataset catalog.
-Therefore inventory-local group variables work for this Futura setup; this
+On 2026-10-30, the same resolved variables and data-serving behavior were
+verified on Rocky Linux 9.8. Therefore inventory-local group variables work
+for this Futura setup; this
 does not change Ansible's discovery behavior for the upstream sibling
-`group_vars` directory. Variable resolution has not been verified on Rocky
-Linux 9.8.
+`group_vars` directory.
 
 The repeatable baseline-first process is described in the
 [`Ansible deployment test methodology`](../ansible-deployment-test-methodology.md).

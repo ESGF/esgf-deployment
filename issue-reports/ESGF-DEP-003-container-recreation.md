@@ -44,3 +44,9 @@ container IDs (`ok=47`, `changed=6`, `unreachable=0`, `failed=0`,
 `skipped=31`). The dataset catalog and fileServer continued to return HTTP
 200 after the containers were recreated. The interruption duration was not
 measured in this run either.
+
+The Rocky Linux 9.8 data-serving repeat on 2026-10-30 also changed all six
+container IDs (`ok=50`, `changed=10`, `unreachable=0`, `failed=0`,
+`skipped=30`). The dataset catalog, fileServer, OPeNDAP, health, search, and
+Solr replication endpoints returned HTTP 200 after recreation. Interruption
+duration was not measured.
