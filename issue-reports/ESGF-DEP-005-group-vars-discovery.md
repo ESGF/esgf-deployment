@@ -6,9 +6,10 @@
   failure.
 - **Observed scope:** Futura-local playbook setup; verified on Rocky Linux
   8.10 and 9.8.
-- **Status:** Inventory-local workaround verified for both data-serving
-  tests. Upstream sibling group variables remain undiscovered by the
-  Futura-local playbook.
+- **Status:** Inventory-local configuration verified for both data-serving
+  tests. This is a Futura test-setup caveat, not an `esgf-docker` code issue;
+  no upstream fix branch is applicable. Upstream sibling group variables
+  remain undiscovered by the Futura-local playbook.
 
 ## Details
 
@@ -38,10 +39,9 @@ On 2026-10-29, Futura placed a single-key data configuration in
 `data_datasets`. The prepared fixture was then visible in both THREDDS and
 fileserver containers and appeared in the generated dataset catalog.
 On 2026-10-30, the same resolved variables and data-serving behavior were
-verified on Rocky Linux 9.8. Therefore inventory-local group variables work
-for this Futura setup; this
-does not change Ansible's discovery behavior for the upstream sibling
-`group_vars` directory.
+verified on Rocky Linux 9.8. Therefore, inventory-local group variables work
+for this Futura setup. This does not change Ansible's discovery behavior for
+the upstream sibling `group_vars` directory.
 
 The repeatable baseline-first process is described in the
 [`Ansible deployment test methodology`](../ansible-deployment-test-methodology.md).

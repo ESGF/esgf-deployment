@@ -5,7 +5,8 @@
 - **Classification:** Availability/idempotence issue; not a failed
   deployment.
 - **Observed scope:** Rocky Linux 8.10 and Rocky Linux 9.8.
-- **Status:** Reproduced on both; not fixed in FUTURA.
+- **Status:** Reproduced on both; no issue-specific fix branch has been
+  created in the `esgf-docker` fork.
 
 ## Evidence and cause
 
@@ -24,9 +25,9 @@ changes on repeated runs and trigger a Docker restart.
 
 ## Fix status and proposed upstream change
 
-No fix was applied: the upstream checkout was not modified, and the
-OS-specific FUTURA overrides do not change the unconditional recreation
-behavior.
+The historical OS-specific FUTURA overrides do not change the unconditional
+recreation behavior. No code change or fix branch has been created for this
+finding yet.
 
 Remove unconditional `recreate: yes` from the affected container tasks and
 allow the Docker module to replace containers when image or configuration

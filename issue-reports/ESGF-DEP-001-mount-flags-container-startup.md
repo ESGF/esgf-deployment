@@ -5,7 +5,8 @@
 - **Classification:** Runtime/deployment issue.
 - **Observed scope:** Reproduced on a clean Rocky Linux 8.10 host; not
   reproduced on Rocky Linux 9.8.
-- **Status:** A Rocky 8-specific workaround is in FUTURA. No Rocky 9
+- **Status:** Dedicated fix branch pushed to the FUTURA `esgf-docker` fork.
+  Full deployment verification using that branch is pending. No Rocky 9
   workaround was needed in the tested run.
 
 ## Evidence
@@ -43,22 +44,27 @@ whether changing the container base would affect the failure. The playbook
 used mutable `esgfdeploy/*:latest` tags, and the exact image digests used in
 each run were not recorded.
 
-## Fixes and proposed upstream change
+## Fix branch and proposed upstream change
 
-The Rocky 8 override removes the drop-in, reloads systemd when it is removed,
-and restarts Docker only in that case. It also avoids repeated repository and
-package changes that would otherwise restart Docker unnecessarily.
+The historical Rocky 8 local test override removed the drop-in, reloaded
+systemd when it was removed, and restarted Docker only in that case. That
+override was used for the successful Rocky 8 deployment verification below.
 
-The upstream role should validate whether the mount override is required and
-avoid applying it on host/runtime combinations where it prevents containers
-from starting. A fix should be tested across supported host OS/runtime
-combinations before generalizing the workaround.
+The issue-specific fix is committed on
+[`fix/ESGF-DEP-001-rocky8-mount-flags`](https://gitlab.com/sci-uc/scds/futura/esgf-docker/-/tree/fix/ESGF-DEP-001-rocky8-mount-flags)
+at `b5a2c57`. It skips creating the `MountFlags=shared` drop-in on Rocky
+Linux 8, removes an existing copy, and reloads systemd when its removal
+changes the unit configuration. Other distributions retain the upstream
+behavior.
 
-FUTURA override: [`rocky8 Docker role`](../ansible/overrides/rocky8/roles/docker/tasks/main.yml).
+The branch passes Ansible syntax validation. A full Rocky 8 deployment using
+the branch has not yet been run; the passing deployment below used the
+historical Futura override. The branch is intended for a dedicated upstream
+pull request after deployment verification.
 
 ## Verification and limits
 
-After applying the Rocky 8 override, deployment passed with `ok=49`,
+With the historical Rocky 8 override, deployment passed with `ok=49`,
 `changed=18`, `unreachable=0`, `failed=0`, `skipped=29`; the drop-in was
 absent and all six containers ran. The Rocky 9 run passed while retaining the
 drop-in. This finding is recorded as reproduced only on Rocky 8.10 based on
@@ -67,6 +73,6 @@ these tests.
 The clean Rocky Linux 8.10 data-serving baseline on 2026-10-29 reproduced
 the same failure at `Start THREDDS container` with the same recap:
 `ok=19`, `changed=11`, `unreachable=0`, `failed=1`, `skipped=11`. With the
-Rocky 8 override, the configured synthetic dataset was served from both
-THREDDS and fileserver; see the
+historical Rocky 8 override, the configured synthetic dataset was served from
+both THREDDS and fileserver; see the
 [data-serving test results](../ansible-deployment-test-results.md#rocky-linux-810-data-serving-scenario--2026-10-29).

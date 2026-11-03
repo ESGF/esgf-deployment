@@ -24,10 +24,10 @@ key in the upstream example.
 
 ## Fix status and proposed upstream change
 
-No upstream files were edited and no FUTURA fix is recorded. Combine all
-dataset examples into a single `data_datasets` sequence, or remove the
-duplicate unused key. Add YAML linting that rejects duplicate keys to catch
-similar defects.
+No fix branch has been created in the `esgf-docker` fork. Combine all dataset
+examples into a single `data_datasets` sequence, or remove the duplicate
+unused key. Add YAML linting that rejects duplicate keys to catch similar
+defects.
 
 ## Verification and limits
 

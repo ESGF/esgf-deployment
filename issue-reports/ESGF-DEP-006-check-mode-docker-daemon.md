@@ -5,7 +5,8 @@
 - **Classification:** Check-mode validation limitation.
 - **Observed scope:** Rocky Linux 8.10 before Docker installation; Rocky
   Linux 9.8 was not tested for this behavior.
-- **Status:** Reproduced; no code change applied.
+- **Status:** Reproduced; no issue-specific fix branch has been created in
+  the `esgf-docker` fork.
 
 ## Evidence and cause
 
@@ -21,7 +22,8 @@ dry run cannot safely simulate the entire playbook on a host without Docker.
 ## Workaround and proposed improvement
 
 The deployment was run normally to install and start Docker before proceeding.
-For future check-mode runs, first ensure Docker is installed and running.
+For future check-mode runs, first ensure Docker is installed and running. No
+fix branch has been created for the proposed upstream improvements below.
 
 An upstream improvement would guard Docker API operations in check mode when
 the daemon is unavailable, or restructure the role so a fresh-host check run

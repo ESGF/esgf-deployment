@@ -5,13 +5,14 @@
 FUTURA's primary objective is to test ESGF node deployments using the
 deployment tools provided by the upstream `esgf-docker` repository across
 different configurations and environments. The work records reproducible
-evidence and proposes fixes for issues so they can be addressed in
-`esgf-docker`; it does not modify that upstream checkout.
+evidence and prepares isolated fixes for actionable findings in the FUTURA
+fork of `esgf-docker`, so they can be proposed to the canonical repository.
 
 This document defines a repeatable way to test an upstream Ansible deployment
 on a new guest operating system or version. Each OS test starts with a clean
-VM and unmodified upstream roles. Fixes discovered on one OS must not leak
-into another OS's baseline or override tree.
+VM and unmodified upstream roles. Keep the upstream repository as the
+read-only baseline; implement each actionable deployment fix on its own
+branch in the FUTURA GitLab fork.
 
 The corresponding observations and issue-by-issue results are maintained in
 the [Ansible deployment test results](./ansible-deployment-test-results.md).
@@ -22,29 +23,31 @@ separate infrastructure report.
 ## Test rules
 
 1. Pin and record the upstream `esgf-docker` commit used for the test. Do not
-   edit the upstream checkout.
+   edit the canonical upstream checkout or its `master` branch.
 2. Use a fresh guest for each OS/image test. Do not treat an already-configured
    host as a clean baseline.
 3. Run the initial baseline with only upstream roles in `ANSIBLE_ROLES_PATH`.
-   Do not use role overrides or fixes from a previously tested OS.
+   Do not use a fix branch or local workaround in the baseline.
 4. Record failures before changing anything. Apply a fix only after the issue
-   has been reproduced and understood.
-5. Keep each OS's fixes in a separate tree, for example:
-   `ansible/overrides/rocky8/roles/` and `ansible/overrides/rocky9/roles/`.
-   Put the tested OS's override path before upstream roles only for that OS's
-   post-baseline runs.
-6. Do not label an issue OS-specific unless its behavior is observed on that
+   has been reproduced and understood. Make a separate fork branch for each
+   actionable `esgf-docker` issue; do not combine unrelated fixes.
+5. Keep the upstream repository as `upstream` and the FUTURA GitLab fork as
+   `origin`. Base each issue branch on the current upstream `master`, and
+   push only to the fork when the user explicitly requests it.
+6. Leave fix changes uncommitted and unpushed for user review. Commit or push
+   only after the user explicitly asks.
+7. Do not label an issue OS-specific unless its behavior is observed on that
    OS. Record “not reproduced,” “not tested,” or “not retested” explicitly.
-7. Record deployment and repeat-run recaps, service state, endpoint checks,
+8. Record deployment and repeat-run recaps, service state, endpoint checks,
    and unresolved limitations. A successful workaround does not prove that
    the upstream issue is absent.
 
-An Ansible role found earlier in `ANSIBLE_ROLES_PATH` shadows the upstream
-role as a whole; role files are not overlaid file-by-file. When overriding a
-role, base its files on the same pinned upstream commit, preserve the files
-needed by that role, and make only the OS-test-specific changes. Keep
-configuration-only adaptations (such as pointing a template path at the
-upstream checkout) distinct from bug fixes in the report.
+Prior tests used Futura-local OS overrides as temporary workarounds. They
+remain historical test artifacts, not the source of truth for future fixes.
+For post-fix verification, point `ANSIBLE_ROLES_PATH` at the issue branch's
+complete role tree; a role earlier in that path shadows the upstream role as
+a whole. Keep configuration-only adaptations (such as pointing a template
+path at the upstream checkout) distinct from code fixes in reports.
 
 ## 1. Prepare and record the test inputs
 
@@ -173,9 +176,9 @@ ANSIBLE_ROLES_PATH="$UPSTREAM_ROLES" \
   "$FUTURA_ANSIBLE/esgf-docker-playbook.yml" --limit node01
 ```
 
-Do not add any Futura OS override for this run. If the play fails, preserve
-the relevant task, error, and recap as baseline evidence. Inspect guest
-packages, service state, and logs only as needed to establish the cause.
+Do not add any Futura workaround or fork fix for this run. If the play fails,
+preserve the relevant task, error, and recap as baseline evidence. Inspect
+guest packages, service state, and logs only as needed to establish the cause.
 Classify each observation as guest-OS/platform-specific, configuration-related,
 upstream behavior shared across platforms, or test/setup limitation.
 
@@ -184,39 +187,55 @@ on the fresh host before the real deployment. It does not replace the real
 upstream-only baseline, because check mode does not execute installation
 tasks.
 
-## 4. Apply fixes in the tested OS tree only
+## 4. Create and verify an issue-specific fork branch
 
-Create or update only the tree for the guest under test, for example:
-
-```text
-ansible/overrides/rocky8/roles/
-ansible/overrides/rocky9/roles/
-```
-
-For a role override, start from the pinned upstream role and change only the
-tasks/defaults necessary to address an issue reproduced during that OS test.
-Do not copy fixes from another OS merely because they were needed there.
-If the same issue is independently reproduced on multiple OSs, keep the
-overrides isolated unless a later deliberate refactor is requested.
-
-Validate syntax and rerun with only the current OS's override tree before the
-upstream role path:
+For each actionable `esgf-docker` issue, create one branch in the FUTURA fork.
+Use remotes named `origin` (the fork) and `upstream` (the canonical GitHub
+repository). Fetch both, base the branch on the current upstream `master`,
+and use a descriptive issue-specific name:
 
 ```sh
-OS_OVERRIDE_ROLES="$FUTURA_ANSIBLE/overrides/<os-version>/roles"
-ANSIBLE_ROLES_PATH="$OS_OVERRIDE_ROLES:$UPSTREAM_ROLES" \
+git fetch upstream
+git fetch origin
+git switch -c fix/ESGF-DEP-###-short-description upstream/master
+```
+
+Change only what is needed to fix that finding. Keep OS-specific conditions
+in the shared upstream role when evidence shows the fix should be conditional
+on the OS. Leave the changes uncommitted and unpushed so the user can review
+them first. Do not commit or push unless explicitly requested. After approval,
+the following commands can be used:
+
+```sh
+git add <changed-files>
+git diff --cached --check
+git commit -m "Fix <short issue description>"
+git push -u origin fix/ESGF-DEP-###-short-description
+```
+
+Do not push fix branches to `upstream`. Do not combine unrelated issue fixes.
+If a finding is a FUTURA test-setup caveat rather than an `esgf-docker` code
+issue, document it and do not create an irrelevant upstream fix branch.
+
+Validate syntax and rerun using the role tree from the issue branch:
+
+```sh
+ESGF_DOCKER_FORK=/path/to/esgf-docker
+ANSIBLE_ROLES_PATH="$ESGF_DOCKER_FORK/deploy/ansible/roles" \
   ansible-playbook -i "$FUTURA_ANSIBLE/inventory.ini" \
   "$FUTURA_ANSIBLE/esgf-docker-playbook.yml" --syntax-check
 
-ANSIBLE_ROLES_PATH="$OS_OVERRIDE_ROLES:$UPSTREAM_ROLES" \
+ANSIBLE_ROLES_PATH="$ESGF_DOCKER_FORK/deploy/ansible/roles" \
   ansible-playbook -i "$FUTURA_ANSIBLE/inventory.ini" \
   "$FUTURA_ANSIBLE/esgf-docker-playbook.yml" --limit node01
 ```
 
-If a retry exposes another failure, record it against that OS, then add the
-next minimal fix to the same OS tree and rerun. Do not describe a baseline
-failure as fixed until the retry completes and the corresponding behavior is
-verified.
+Record the branch name, base upstream commit, working-tree changes, syntax/test
+results, and any OS/configuration limits in the issue report. Record a fix
+commit only after the user requests and approves a commit. Do not describe a
+baseline failure as fixed until the branch's change has been exercised and
+the corresponding behavior verified. Use a new issue branch for a separate
+finding exposed during a retry.
 
 ## 5. Verify the deployment
 
@@ -285,9 +304,9 @@ complete:
   `issue-reports/` for every new issue, linked from the general report.
   Update existing issue reports when new evidence changes their observed
   scope, status, proposed fix, or verification. Include baseline evidence,
-  retry results, relevant recaps, limits, and the OS-specific override or
-  upstream reference. Keep the general report concise; do not duplicate the
-  detailed diagnosis there.
+  retry results, relevant recaps, limits, and the fork branch/commit when a
+  fix exists. Keep the general report concise; do not duplicate the detailed
+  diagnosis there.
 - **OpenTofu report:** Add each provisioned test environment, including OS,
   image name/UUID, flavor, and provisioning outcome. Report tested
   environments rather than which VM happens to be active. Keep infrastructure
@@ -303,18 +322,20 @@ service/container and endpoint verification, and anything not reproduced or
 not tested. Assign each newly observed deployment finding a unique
 `ESGF-DEP-###` ID. This prefix identifies findings from ESGF deployment
 testing; it does not imply every entry is a confirmed upstream bug. Keep
-OS-specific fixes in their own override trees, and never describe a baseline
-failure as fixed until the corresponding behavior is verified.
+each code fix in a dedicated fork branch named for its finding. Never describe
+a baseline failure as fixed until the corresponding behavior is verified.
 
 ## Rocky Linux 9.8 data-serving test performed on 2026-10-30
 
 The clean Rocky Linux 9.8 data-serving test used upstream roles first. The
 baseline failed at Docker SDK installation because the pip prerequisite was
-missing (`ok=8`, `changed=6`, `failed=1`, `skipped=3`). The existing Rocky 9
-override installed the prerequisite and the Rocky 9 proxy override handled
-the HTTP-only configuration; deployment then passed (`ok=50`, `changed=26`,
-`unreachable=0`, `failed=0`, `skipped=30`). The fixture mount, THREDDS and
-fileserver access, file checksum, OPeNDAP, service endpoints, and repeat-run
-behavior passed verification. The repeat recreated all six service
-containers (`ok=50`, `changed=10`, `failed=0`, `skipped=30`). Detailed
-evidence is in the [deployment test results](./ansible-deployment-test-results.md#rocky-linux-98-data-serving-scenario--2026-10-30).
+missing (`ok=8`, `changed=6`, `failed=1`, `skipped=3`). At the time of this
+test, the existing Rocky 9 local overrides supplied the pip prerequisite and
+HTTP-only proxy guard; deployment passed (`ok=50`, `changed=26`,
+`unreachable=0`, `failed=0`, `skipped=30`). Under the new workflow, fixes for
+actionable findings are developed and verified on their individual fork
+branches. The fixture mount, THREDDS and fileserver access, file checksum,
+OPeNDAP, service endpoints, and repeat-run behavior passed verification. The
+repeat recreated all six service containers (`ok=50`, `changed=10`,
+`failed=0`, `skipped=30`). Detailed evidence is in the [deployment test
+results](./ansible-deployment-test-results.md#rocky-linux-98-data-serving-scenario--2026-10-30).

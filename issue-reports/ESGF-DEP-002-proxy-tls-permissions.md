@@ -5,8 +5,8 @@
 - **Classification:** Configuration bug.
 - **Observed scope:** Reproduced on Rocky Linux 8.10 and 9.8 when TLS
   certificate and key were omitted.
-- **Status:** OS-specific FUTURA workarounds are applied; an upstream fix is
-  proposed.
+- **Status:** Historical OS-specific FUTURA workarounds were used in testing.
+  A dedicated issue branch in the `esgf-docker` fork has not yet been created.
 
 ## Evidence and cause
 
@@ -22,21 +22,22 @@ on Rocky Linux 8.10 with TLS omitted.
 
 ## Fixes and proposed upstream change
 
-The Rocky 8 and Rocky 9 FUTURA proxy overrides run the permissions task only
-when both `ssl_certificate` and `ssl_private_key` are defined.
+The historical Rocky 8 and Rocky 9 FUTURA proxy overrides run the permissions
+task only when both `ssl_certificate` and `ssl_private_key` are defined.
 
 The upstream role should make the permission operation conditional on the
 TLS configuration and, ideally, on the relevant files being present. This
 preserves the HTTP-only setup while retaining correct ownership and
 permissions when TLS is enabled.
 
-FUTURA overrides:
+Historical FUTURA test overrides:
 
 - [`Rocky 8 proxy role`](../ansible/overrides/rocky8/roles/proxy/tasks/main.yml)
 - [`Rocky 9 proxy role`](../ansible/overrides/rocky9/roles/proxy/tasks/main.yml)
 
 ## Verification and limits
 
-With the guards, HTTP-only deployment completed and the proxy started on both
-tested OSes. HTTPS and certificate provisioning were not tested, so those
-paths still require validation after an upstream change.
+With the historical local guards, HTTP-only deployment completed and the
+proxy started on both tested OSes. HTTPS and certificate provisioning were
+not tested, so those paths still require validation after a fork fix is
+implemented.

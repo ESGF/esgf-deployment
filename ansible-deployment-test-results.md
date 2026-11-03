@@ -28,27 +28,27 @@ establish that a finding cannot occur on other systems.
 
 | ID | Finding | Observed scope | Status | Detailed report |
 |---|---|---|---|---|
-| ESGF-DEP-001 | THREDDS container startup fails with upstream `MountFlags=shared` | Rocky Linux 8.10 | Rocky 8 workaround applied | [ESGF-DEP-001](./issue-reports/ESGF-DEP-001-mount-flags-container-startup.md) |
-| ESGF-DEP-002 | Proxy permission task fails when TLS files are omitted | Rocky Linux 8.10 and Rocky Linux 9.8 | OS-specific workarounds applied; upstream fix proposed | [ESGF-DEP-002](./issue-reports/ESGF-DEP-002-proxy-tls-permissions.md) |
-| ESGF-DEP-003 | Unchanged playbook rerun recreates service containers | Rocky Linux 8.10 and Rocky Linux 9.8 | Reproduced; upstream fix proposed, not applied | [ESGF-DEP-003](./issue-reports/ESGF-DEP-003-container-recreation.md) |
-| ESGF-DEP-004 | Duplicate `data_datasets` key in upstream example variables | OS-independent (source inspection) | Confirmed by inspection; runtime behavior untested | [ESGF-DEP-004](./issue-reports/ESGF-DEP-004-duplicate-data-datasets.md) |
-| ESGF-DEP-005 | Futura-local playbook does not discover upstream sibling `group_vars` | OS-independent (test setup) | Inventory-local group-vars workaround verified | [ESGF-DEP-005](./issue-reports/ESGF-DEP-005-group-vars-discovery.md) |
-| ESGF-DEP-006 | Initial check-mode run requires an unavailable Docker daemon | Rocky Linux 8.10 | Reproduced; no code change | [ESGF-DEP-006](./issue-reports/ESGF-DEP-006-check-mode-docker-daemon.md) |
-| ESGF-DEP-007 | Rocky 9 host lacks pip prerequisite for Docker SDK | Rocky Linux 9.8 | Rocky 9 workaround applied; upstream fix proposed | [ESGF-DEP-007](./issue-reports/ESGF-DEP-007-rocky9-pip-prerequisite.md) |
+| ESGF-DEP-001 | THREDDS container startup fails with upstream `MountFlags=shared` | Rocky Linux 8.10 | Fix committed to fork branch; full branch deployment retest pending | [ESGF-DEP-001](./issue-reports/ESGF-DEP-001-mount-flags-container-startup.md) |
+| ESGF-DEP-002 | Proxy permission task fails when TLS files are omitted | Rocky Linux 8.10 and Rocky Linux 9.8 | Historical local workarounds applied; issue branch not yet created | [ESGF-DEP-002](./issue-reports/ESGF-DEP-002-proxy-tls-permissions.md) |
+| ESGF-DEP-003 | Unchanged playbook rerun recreates service containers | Rocky Linux 8.10 and Rocky Linux 9.8 | Reproduced; fix branch not yet created | [ESGF-DEP-003](./issue-reports/ESGF-DEP-003-container-recreation.md) |
+| ESGF-DEP-004 | Duplicate `data_datasets` key in upstream example variables | OS-independent (source inspection) | Confirmed by inspection; runtime behavior untested; fix branch not yet created | [ESGF-DEP-004](./issue-reports/ESGF-DEP-004-duplicate-data-datasets.md) |
+| ESGF-DEP-005 | Futura-local playbook does not discover upstream sibling `group_vars` | OS-independent (test setup) | Inventory-local group-vars configuration verified; no upstream fix applicable | [ESGF-DEP-005](./issue-reports/ESGF-DEP-005-group-vars-discovery.md) |
+| ESGF-DEP-006 | Initial check-mode run requires an unavailable Docker daemon | Rocky Linux 8.10 | Reproduced; fix branch not yet created | [ESGF-DEP-006](./issue-reports/ESGF-DEP-006-check-mode-docker-daemon.md) |
+| ESGF-DEP-007 | Rocky 9 host lacks pip prerequisite for Docker SDK | Rocky Linux 9.8 | Historical local workaround applied; issue branch not yet created | [ESGF-DEP-007](./issue-reports/ESGF-DEP-007-rocky9-pip-prerequisite.md) |
 
 ## 3. Deployment verification
 
-| OS | Clean upstream-only baseline | With OS-specific fixes | Repeat run |
+| OS | Clean upstream-only baseline | With historical FUTURA overrides | Repeat run |
 |---|---|---|---|
 | Rocky Linux 8.10 | Failed at THREDDS startup: `ok=19`, `changed=11`, `failed=1`, `skipped=11` | Passed: `ok=49`, `changed=18`, `failed=0`, `skipped=29` | Passed: `ok=47`, `changed=6`, `failed=0`, `skipped=31`; all six service container IDs changed |
 | Rocky Linux 9.8 | Failed at Docker SDK installation: `ok=8`, `changed=6`, `failed=1`, `skipped=3` | Passed: `ok=50`, `changed=26`, `failed=0`, `skipped=30` | Passed: `ok=50`, `changed=10`, `failed=0`, `skipped=30`; all six service container IDs changed |
 
-After applying the respective OS-specific fixes, `proxy`, `thredds`,
+After applying the historical local workarounds, `proxy`, `thredds`,
 `fileserver`, `solr-master`, `solr-slave`, and `search` ran on both operating
-systems. The
-`/health`, THREDDS catalog, ESGF search query, and Solr replication endpoints
-for `files`, `datasets`, and `aggregations` returned HTTP 200 on both. The
-upstream proxy template returns HTTP 404 at `/` by design.
+systems. The `/health`, THREDDS catalog, ESGF search query, and Solr
+replication endpoints for `files`, `datasets`, and `aggregations` returned
+HTTP 200 on both. The upstream proxy template returns HTTP 404 at `/` by
+design.
 
 ### Rocky Linux 8.10 data-serving scenario — 2026-10-29
 
@@ -69,15 +69,15 @@ at THREDDS startup with runc reporting that `/usr/local/bin/tini` was absent
 rendered THREDDS catalog contained the configured dataset scan, but deployment
 stopped before the containers could serve it.
 
-With the existing Rocky 8-specific overrides, deployment completed
-(`ok=49`, `changed=18`, `unreachable=0`, `failed=0`, `skipped=29`). The
-`/data` bind mount was present and read-only in both THREDDS and fileserver;
-the fixture was readable in both containers. The root and dataset-specific
-THREDDS catalogs, fileServer request, OPeNDAP `.dds` and `.dods?tas` requests,
-health endpoint, ESGF search endpoint, and all three Solr replication
-endpoints returned HTTP 200. Downloading the fileServer URL produced a file
-with the same SHA-256 as the local fixture; `ncdump` confirmed the NetCDF
-header and `tas` values.
+With the Rocky 8-specific local test override used at the time, deployment
+completed (`ok=49`, `changed=18`, `unreachable=0`, `failed=0`, `skipped=29`).
+The `/data` bind mount was present and read-only in both THREDDS and
+fileserver; the fixture was readable in both containers. The root and
+dataset-specific THREDDS catalogs, fileServer request, OPeNDAP `.dds` and
+`.dods?tas` requests, health endpoint, ESGF search endpoint, and all three
+Solr replication endpoints returned HTTP 200. Downloading the fileServer URL
+produced a file with the same SHA-256 as the local fixture; `ncdump` confirmed
+the NetCDF header and `tas` values.
 
 The search endpoint returned a valid response with `numFound=0`. The
 synthetic dataset was not registered in ESGF search, so this run verifies
@@ -106,7 +106,7 @@ installed.` The baseline recap was `ok=8`, `changed=6`, `unreachable=0`,
 `failed=1`, `skipped=3`, reproducing
 [ESGF-DEP-007](./issue-reports/ESGF-DEP-007-rocky9-pip-prerequisite.md).
 
-With the existing Rocky 9 overrides, deployment completed
+With the Rocky 9 local test overrides used at the time, deployment completed
 (`ok=50`, `changed=26`, `unreachable=0`, `failed=0`, `skipped=30`). All six
 service containers ran. The `/data` bind mount was read-only in both
 THREDDS and fileserver, and the fixture was readable in both containers. The
