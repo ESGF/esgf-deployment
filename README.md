@@ -54,6 +54,9 @@ The broader community repository may evolve beyond these initial activities, wit
 
 ## Getting started
 
+For a concise start-to-finish deployment walkthrough, see the
+[Ansible user guide](./ansible-user-guide.md).
+
 The `esgf-docker` Ansible deployment results are documented in the
 [deployment test results](./ansible-deployment-test-results.md). The repeatable
 clean-VM, upstream-baseline-first process is in the
