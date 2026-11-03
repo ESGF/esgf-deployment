@@ -4,8 +4,10 @@
 
 - **Classification:** Configuration defect.
 - **Observed scope:** Upstream source inspection; not specific to a guest OS.
-- **Status:** Duplicate definition confirmed; runtime behavior has not been
-  tested in a customized data-node deployment.
+- **Status:** Duplicate definition confirmed; the example is consolidated on
+  local branch `fix/ESGF-DEP-004-unique-data-datasets`, commit `d2fea8f`.
+  Playbook syntax and dataset variable resolution pass. The commit is local
+  and unpushed; full deployment verification is pending.
 
 ## Evidence and risk
 
@@ -24,14 +26,13 @@ key in the upstream example.
 
 ## Fix status and proposed upstream change
 
-No fix branch has been created in the `esgf-docker` fork. Combine all dataset
-examples into a single `data_datasets` sequence, or remove the duplicate
-unused key. Add YAML linting that rejects duplicate keys to catch similar
-defects.
+The candidate branch retains one active `data_datasets` mapping and presents
+the S3 configuration as a commented example, so the two mutually exclusive
+examples cannot overwrite each other. Add YAML linting that rejects duplicate
+keys to catch similar defects.
 
 ## Verification and limits
 
-The duplicate remains confirmed by source inspection; its runtime handling
-is untested. Validate the upstream file with a duplicate-key-aware YAML
-linter and an Ansible run that resolves the expected dataset list before
-treating this finding as resolved.
+The original duplicate remains confirmed by source inspection. The
+consolidated example resolves the two intended local datasets; a full
+deployment using customized data-node variables remains untested.

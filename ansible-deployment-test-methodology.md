@@ -42,12 +42,13 @@ separate infrastructure report.
    and unresolved limitations. A successful workaround does not prove that
    the upstream issue is absent.
 
-Prior tests used Futura-local OS overrides as temporary workarounds. They
-remain historical test artifacts, not the source of truth for future fixes.
-For post-fix verification, point `ANSIBLE_ROLES_PATH` at the issue branch's
-complete role tree; a role earlier in that path shadows the upstream role as
-a whole. Keep configuration-only adaptations (such as pointing a template
-path at the upstream checkout) distinct from code fixes in reports.
+Earlier tests used Futura-local OS overrides as temporary workarounds. Their
+results remain historical evidence in the reports, but the temporary override
+files have been removed. For post-fix verification, point
+`ANSIBLE_ROLES_PATH` at the issue branch's complete role tree; a role earlier
+in that path shadows the upstream role as a whole. Keep configuration-only
+adaptations (such as pointing a template path at the upstream checkout)
+distinct from code fixes in reports.
 
 ## 1. Prepare and record the test inputs
 

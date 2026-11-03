@@ -171,14 +171,25 @@ workarounds, verification, and scope:
   drop-in prevented containers from starting. The FUTURA test removes this
   drop-in; behavior on other operating systems has not been tested.
 * The upstream proxy role's TLS file-permission task fails when no certificate
-  and private key are configured. The FUTURA test guards this task when TLS
-  files are absent. HTTPS and certificate provisioning remain untested.
+  and private key are configured. Historical tests used a local guard;
+  a candidate fix is prepared on a local FUTURA fork branch and passes syntax
+  validation; deployment verification is pending.
+  HTTPS and certificate provisioning remain untested.
 * Re-running the upstream playbook recreates service containers, causing
-  service interruption even when configuration is unchanged.
+  service interruption even when configuration is unchanged. A candidate
+  idempotence fix is prepared on a local FUTURA fork branch and passes syntax
+  validation; deployment verification is pending.
 * The upstream example `group_vars/data.yml` defines `data_datasets` twice.
-  Loading it can replace the earlier dataset list with the later one.
+  Loading it can replace the earlier dataset list with the later one. A
+  consolidated example is prepared on a local branch and passes syntax and
+  variable-resolution checks; full deployment verification is pending.
 * An initial check-mode run against a fresh host failed because the auth role
-  queried Docker before Docker had been installed and started.
+  queried Docker before Docker had been installed and started. This remains a
+  check-mode limitation; no safe code fix branch has been prepared.
+* On Rocky Linux 9.8, the upstream Docker role did not install the pip
+  prerequisite for the Docker SDK. A candidate fix is prepared on a local
+  FUTURA fork branch and passes syntax validation; deployment verification is
+  pending.
 
 The Vagrant example's CentOS 7 repository availability should be checked
 separately if that example is used; it was not part of the Rocky Linux 8.10

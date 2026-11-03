@@ -5,8 +5,9 @@
 - **Classification:** Configuration bug.
 - **Observed scope:** Reproduced on Rocky Linux 8.10 and 9.8 when TLS
   certificate and key were omitted.
-- **Status:** Historical OS-specific FUTURA workarounds were used in testing.
-  A dedicated issue branch in the `esgf-docker` fork has not yet been created.
+- **Status:** Candidate fix prepared on local branch
+  `fix/ESGF-DEP-002-proxy-tls-guard`, commit `32c6b13`; syntax check passes.
+  The commit is local and unpushed; deployment testing is pending.
 
 ## Evidence and cause
 
@@ -30,14 +31,18 @@ TLS configuration and, ideally, on the relevant files being present. This
 preserves the HTTP-only setup while retaining correct ownership and
 permissions when TLS is enabled.
 
-Historical FUTURA test overrides:
+The candidate branch applies the same condition used by the certificate
+installation task: both `ssl_certificate` and `ssl_private_key` must be
+defined before attempting to change file permissions.
 
-- [`Rocky 8 proxy role`](../ansible/overrides/rocky8/roles/proxy/tasks/main.yml)
-- [`Rocky 9 proxy role`](../ansible/overrides/rocky9/roles/proxy/tasks/main.yml)
+The successful earlier deployments used temporary Rocky 8 and Rocky 9
+FUTURA overrides, which have since been removed. Their behavior and test
+results are summarized above; the committed candidate fix has not yet been
+deployed.
 
 ## Verification and limits
 
 With the historical local guards, HTTP-only deployment completed and the
 proxy started on both tested OSes. HTTPS and certificate provisioning were
-not tested, so those paths still require validation after a fork fix is
-implemented.
+not tested. The candidate branch has not been deployed; validate both
+HTTP-only and TLS-enabled configurations before treating the issue as fixed.

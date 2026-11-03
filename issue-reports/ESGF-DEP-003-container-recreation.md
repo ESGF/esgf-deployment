@@ -5,8 +5,10 @@
 - **Classification:** Availability/idempotence issue; not a failed
   deployment.
 - **Observed scope:** Rocky Linux 8.10 and Rocky Linux 9.8.
-- **Status:** Reproduced on both; no issue-specific fix branch has been
-  created in the `esgf-docker` fork.
+- **Status:** Candidate fix prepared on local branch
+  `fix/ESGF-DEP-003-idempotent-container-runs`, commit `69dc037`; syntax
+  check passes. The commit is local and unpushed; deployment testing is
+  pending.
 
 ## Evidence and cause
 
@@ -26,8 +28,9 @@ changes on repeated runs and trigger a Docker restart.
 ## Fix status and proposed upstream change
 
 The historical OS-specific FUTURA overrides do not change the unconditional
-recreation behavior. No code change or fix branch has been created for this
-finding yet.
+recreation behavior. The candidate branch removes forced recreation from
+service-container tasks and makes Docker repository, package, and service
+setup idempotent so an unchanged rerun does not trigger a Docker restart.
 
 Remove unconditional `recreate: yes` from the affected container tasks and
 allow the Docker module to replace containers when image or configuration
@@ -50,4 +53,6 @@ The Rocky Linux 9.8 data-serving repeat on 2026-10-30 also changed all six
 container IDs (`ok=50`, `changed=10`, `unreachable=0`, `failed=0`,
 `skipped=30`). The dataset catalog, fileServer, OPeNDAP, health, search, and
 Solr replication endpoints returned HTTP 200 after recreation. Interruption
-duration was not measured.
+duration was not measured. The candidate branch has not been run on either
+OS; container identity and service continuity must be verified on an
+unchanged second run before considering the fix effective.
