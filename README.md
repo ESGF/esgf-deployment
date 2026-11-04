@@ -2,7 +2,7 @@
 
 **Community resources for deploying and integrating ESGF services**
 
-> **Status:** Initial proposal, under discussion.
+> **Status:** Preliminary draft, under review.
 
 ## Overview
 
@@ -10,7 +10,7 @@ This repository aims to provide a common entry point for deployment and operatio
 
 The goal is to make existing ESGF software and operational experience easier to reuse, helping sites deploy, configure, integrate and validate ESGF services in different environments.
 
-Rather than replacing existing software repositories or documentation, this repository will bring together deployment recipes, tested configurations, validation resources and links to authoritative upstream sources.
+Rather than replacing existing software repositories or documentation, this repository brings together deployment recipes, tested configurations, validation resources and links to authoritative upstream sources.
 
 ## Scope
 
@@ -38,51 +38,47 @@ The intention is to progressively collect and develop:
 - Tested versions, compatibility information and known limitations.
 - Operational knowledge contributed by ESGF sites.
 
+The repository is not limited to documentation. Deployment recipes, configurations, workflows and other reusable artefacts may also be maintained and versioned here.
+
 Existing component-specific repositories remain the authoritative sources for their software and documentation.
 
 This repository is not intended to replace software development, provide a central ESGF helpdesk or assume responsibility for operating services at individual sites.
 
 ## Community and contributions
 
-This is intended to be an **ESGF community resource**, open to contributions from software developers, infrastructure operators and site administrators.
+This is an **ESGF community resource**, open to contributions from software developers, infrastructure operators and site administrators.
 
-The initial work is being coordinated through **FUTURA Task 8.3 (Setup DevOps)**, led by CSIC with the participation of the T8.3 partners.
+It aims to bring together deployment resources and operational experience from different ESGF sites and teams, covering different deployment technologies and approaches.
 
-FUTURA T8.3 will initially focus on reusable deployment resources for publication, replication and data access, building on existing deployments and operational experience.
+Contributions and maintenance arrangements will evolve with the participation of the wider ESGF community.
 
-The broader community repository may evolve beyond these initial activities, with contributions and maintenance responsibilities agreed among the participating teams.
+## Initial deployment resources
 
-## Getting started
+The first resources available in this repository document deployment and validation work using the existing [esgf-docker](https://github.com/ESGF/esgf-docker) Ansible deployment approach.
 
-For a concise start-to-finish deployment walkthrough, see the
-[Ansible user guide](./ansible-user-guide.md).
+- [Ansible user guide](./ansible-user-guide.md)
+- [Deployment requirements](./deploy_requirements.md)
+- [Deployment test methodology](./ansible-deployment-test-methodology.md)
+- [Deployment test results](./ansible-deployment-test-results.md)
+- [Deployment test roadmap](./ansible-deployment-test-roadmap.md)
+- [Deployment issue reports](./issue-reports/)
 
-The `esgf-docker` Ansible deployment results are documented in the
-[deployment test results](./ansible-deployment-test-results.md). The repeatable
-clean-VM, upstream-baseline-first process is in the
-[Ansible deployment test methodology](./ansible-deployment-test-methodology.md).
-The Futura-local playbook and inventory are in [`ansible/`](./ansible/).
-Historical test workarounds are documented in the issue reports; their
-temporary override files have been removed now that fixes are maintained on
-issue-specific fork branches. Fixes for actionable `esgf-docker` findings are
-developed on separate issue-specific branches in the FUTURA GitLab fork, then
-can be proposed to the canonical GitHub repository as individual pull
-requests.
-The prioritized next scenarios are in the
-[deployment test roadmap](./ansible-deployment-test-roadmap.md).
+These documents describe deployment requirements, reproducible testing on clean virtual machines, observed results and known issues, including tests with Rocky Linux 8.10 and 9.8.
 
-Use a clean upstream revision for each baseline. Keep the upstream checkout
-separate from the fork used for fixes. See the reports for reproducible
-commands and Rocky Linux 8.10/9.8 test results.
+The test-specific Ansible playbooks, inventories and configurations are not currently included in this repository. The published documentation does not yet constitute a complete, self-contained deployment recipe.
+
+Software fixes and component-specific improvements should be contributed to their upstream repositories wherever possible.
 
 ## Contributing
 
-*Contribution guidelines and repository organisation will be agreed with
+Contributions from the ESGF community are welcome, including deployment recipes, configuration examples, validation results and operational experience.
+
+Contribution guidelines and maintenance arrangements will be developed with the ESGF community.
 
 ## Acknowledgements and funding
 
-The initial development and coordination of this community repository are supported by **FUTURA (Task 8.3, Setup DevOps)**, a project funded by the European Union's Horizon Europe research and innovation programme under Grant Agreement No. **101295156**.
+The initial development of this community repository has been supported by **FUTURA**, a project funded by the European Union's Horizon Europe research and innovation programme under Grant Agreement No. **101295156**.
 
-This repository is intended as a community resource for ESGF, with contributions from different projects, institutions and ESGF teams.
+The repository also builds on software, documentation and operational experience contributed by the wider ESGF community.
 
 Funded by the European Union. Views and opinions expressed are however those of the author(s) only and do not necessarily reflect those of the European Union or the European Climate, Infrastructure and Environment Executive Agency (CINEA). Neither the European Union nor the granting authority can be held responsible for them.
