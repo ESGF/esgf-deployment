@@ -5,20 +5,19 @@
 - **Classification:** Availability/idempotence issue; not a failed
   deployment.
 - **Observed scope:** Rocky Linux 8.10 and Rocky Linux 9.8.
-- **Status:** Candidate fix prepared on local branch
+- **Status:** Candidate fix pushed on branch
   `fix/ESGF-DEP-003-idempotent-container-runs`, commit `69dc037`; syntax
-  check passes. The commit is local and unpushed; deployment testing is
-  pending.
+  check passes. Deployment testing on a data-only inventory is pending.
 
 ## Evidence and cause
 
-An unchanged second Ansible run replaced all six service containers
-(`proxy`, `thredds`, `fileserver`, `solr-master`, `solr-slave`, and `search`).
-The container IDs changed between runs, confirming recreation. This can
-briefly interrupt service. The Rocky 8 repeat completed with
-`ok=47`, `changed=6`, `unreachable=0`, `failed=0`, `skipped=31`; the Rocky 9
-repeat completed with `ok=50`, `changed=10`, `unreachable=0`, `failed=0`,
-`skipped=30`.
+An unchanged second Ansible run replaced all six containers configured in
+the historical test inventory, which included services outside the current
+data-node scope. The container IDs changed between runs, confirming
+recreation. This can briefly interrupt service. The Rocky 8 repeat completed
+with `ok=47`, `changed=6`, `unreachable=0`, `failed=0`, `skipped=31`; the
+Rocky 9 repeat completed with `ok=50`, `changed=10`, `unreachable=0`,
+`failed=0`, `skipped=30`.
 
 The upstream `docker_container` tasks specify `recreate: yes`, which requests
 container recreation rather than relying on whether configuration or image
@@ -43,16 +42,16 @@ restarts.
 Both repeat runs completed and the service endpoints passed checks afterward.
 The duration of service interruption was not measured.
 
-The Rocky Linux 8.10 data-serving repeat on 2026-10-29 also changed all six
-container IDs (`ok=47`, `changed=6`, `unreachable=0`, `failed=0`,
-`skipped=31`). The dataset catalog and fileServer continued to return HTTP
-200 after the containers were recreated. The interruption duration was not
-measured in this run either.
+The Rocky Linux 8.10 data-serving repeat on 2026-10-29 also changed all
+container IDs in that historical inventory (`ok=47`, `changed=6`,
+`unreachable=0`, `failed=0`, `skipped=31`). The dataset catalog and fileServer
+continued to return HTTP 200 after the containers were recreated. The
+interruption duration was not measured in this run either.
 
-The Rocky Linux 9.8 data-serving repeat on 2026-10-30 also changed all six
-container IDs (`ok=50`, `changed=10`, `unreachable=0`, `failed=0`,
-`skipped=30`). The dataset catalog, fileServer, OPeNDAP, health, search, and
-Solr replication endpoints returned HTTP 200 after recreation. Interruption
+The Rocky Linux 9.8 data-serving repeat on 2026-10-30 also changed all
+container IDs in that historical inventory (`ok=50`, `changed=10`,
+`unreachable=0`, `failed=0`, `skipped=30`). The dataset catalog, fileServer,
+OPeNDAP, and health endpoints returned HTTP 200 after recreation. Interruption
 duration was not measured. The candidate branch has not been run on either
 OS; container identity and service continuity must be verified on an
 unchanged second run before considering the fix effective.

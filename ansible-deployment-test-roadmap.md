@@ -3,13 +3,14 @@
 FUTURA tests the upstream `esgf-docker` Ansible deployment across useful
 configurations and environments, records reproducible evidence, and develops
 isolated candidate fixes in the FUTURA fork for contribution upstream. The
-data-serving scenario is complete on Rocky Linux 8.10 and 9.8.
+historical data-serving checks exist for Rocky Linux 8.10 and 9.8; repeat
+testing with a data-only inventory is still needed.
 
 ## Priorities
 
 | Priority | Scenario | Key validation |
 |---:|---|---|
-| 1 | **Data-serving node** | Rocky Linux 8.10 and 9.8 complete. Configure one host data mount and representative dataset. Verify mount visibility, THREDDS catalog, file access, and search behavior. Validate `data_datasets` first ([ESGF-DEP-004](./issue-reports/ESGF-DEP-004-duplicate-data-datasets.md)). |
+| 1 | **Data-serving node** | Rocky Linux 8.10 and 9.8 have historical data-serving results. Configure one host data mount and representative dataset. Verify mount visibility, THREDDS catalog, file access, and OPeNDAP. Validate `data_datasets` first ([ESGF-DEP-004](./issue-reports/ESGF-DEP-004-duplicate-data-datasets.md)). |
 | 2 | **TLS-enabled deployment** | Use a valid certificate/key; verify HTTPS, certificate presentation, and service endpoints. Keep separate from HTTP-only testing ([ESGF-DEP-002](./issue-reports/ESGF-DEP-002-proxy-tls-permissions.md)). |
 | 3 | **Repeat and image-update behavior** | Compare image/container IDs and endpoint availability across an unchanged rerun and a deliberate image update. Record Docker restarts, recreation, interruption, and recovery ([ESGF-DEP-003](./issue-reports/ESGF-DEP-003-container-recreation.md)). |
 | 4 | **Additional host OSes** | Add distributions supported by `esgf-docker` or needed for a real deployment. Start clean, run upstream-only baselines, and create a dedicated fork branch for each actionable finding. |

@@ -4,9 +4,9 @@
 
 - **Classification:** Platform compatibility/deployment bug.
 - **Observed scope:** Rocky Linux 9.8; not observed on Rocky Linux 8.10.
-- **Status:** Candidate fix prepared on local branch
+- **Status:** Candidate fix pushed on branch
   `fix/ESGF-DEP-007-rocky9-pip`, commit `4ae60b8`; syntax check passes.
-  The commit is local and unpushed; deployment testing is pending.
+  Deployment verification is pending.
 
 ## Evidence and cause
 

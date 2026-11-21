@@ -5,9 +5,9 @@
 - **Classification:** Configuration defect.
 - **Observed scope:** Upstream source inspection; not specific to a guest OS.
 - **Status:** Duplicate definition confirmed; the example is consolidated on
-  local branch `fix/ESGF-DEP-004-unique-data-datasets`, commit `d2fea8f`.
-  Playbook syntax and dataset variable resolution pass. The commit is local
-  and unpushed; full deployment verification is pending.
+  branch `fix/ESGF-DEP-004-unique-data-datasets`, commit `d2fea8f`.
+  Playbook syntax and dataset variable resolution pass. The branch is pushed;
+  full deployment verification is pending.
 
 ## Evidence and risk
 

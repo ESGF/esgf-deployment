@@ -5,9 +5,9 @@
 - **Classification:** Configuration bug.
 - **Observed scope:** Reproduced on Rocky Linux 8.10 and 9.8 when TLS
   certificate and key were omitted.
-- **Status:** Candidate fix prepared on local branch
+- **Status:** Candidate fix pushed on branch
   `fix/ESGF-DEP-002-proxy-tls-guard`, commit `32c6b13`; syntax check passes.
-  The commit is local and unpushed; deployment testing is pending.
+  Deployment verification is pending.
 
 ## Evidence and cause
 

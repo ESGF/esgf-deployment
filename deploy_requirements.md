@@ -29,10 +29,9 @@ Before starting the deployment, the site administrator needs to provide or confi
 
 ### ESGF configuration
 
-* Node type(s): data, index, or both 
+* Data-node configuration
 * Dataset definitions to expose
 * ESGF Docker image version/tag to deploy (latest by default)
-* External Solr endpoint(s), if applicable
 
 The site administrator also needs to have the required access and permissions to configure the target host(s).
 
@@ -42,11 +41,7 @@ The site administrator also needs to have the required access and permissions to
 
 ### Deployment topology
 
-The deployment can be configured with hosts providing:
-
-* Data services
-* Index services
-* Both data and index services
+This guide covers hosts providing ESGF data services.
 
 ### Compute
 
@@ -58,9 +53,9 @@ No minimum memory requirements are currently documented.
 
 ### Host operating system
 
-The operating-system compatibility matrix is not yet formally defined. The
-current FUTURA deployment test has been run on Rocky Linux 8.10 only; this
-single test does not establish support for other versions.
+The operating-system compatibility matrix is not yet formally defined.
+FUTURA has run historical tests on Rocky Linux 8.10 and 9.8; these tests do
+not establish support for other versions.
 
 The following distributions are candidates for testing, based on the
 `esgf-docker` deployment role's platform conditions and project plans:
@@ -132,7 +127,7 @@ After deployment, the required ESGF service ports must be accessible according t
 
 The deployment requires site-specific Ansible configuration, including an inventory defining the target hosts.
 
-The inventory needs to identify the hosts providing the relevant services, such as data and index services.
+The inventory needs to identify the hosts providing the data services.
 
 Site-specific variables can be configured using `group_vars` and `host_vars`.
 
@@ -156,7 +151,6 @@ Basic validation should include:
 
 * Confirm that a test dataset can be accessed or downloaded.
 
-* Confirm that index/search functionality is working when an index service is deployed.
 
 ---
 
@@ -214,8 +208,7 @@ The following areas are currently unclear, site-specific, undocumented or should
 
 ### Deployment topology
 
-* What topology should be recommended for a new site?
-* When should data and index services be deployed on separate hosts?
+* What topology should be recommended for a multi-host data node?
 
 ### Ansible and Docker
 

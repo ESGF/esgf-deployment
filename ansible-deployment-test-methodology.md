@@ -260,10 +260,6 @@ From a host with access to the test VM, check each configured endpoint:
 ```text
 /health
 /thredds/catalog/catalog.html
-/esg-search/search?query=*&limit=1
-/solr/files/replication?command=details
-/solr/datasets/replication?command=details
-/solr/aggregations/replication?command=details
 ```
 
 Record HTTP status for each. Do not count an endpoint as verified based only
@@ -275,17 +271,14 @@ THREDDS catalog, the `fileServer` URL, and an OPeNDAP metadata/data request.
 Download the served file and compare its checksum with the local fixture;
 inspect its NetCDF header/data with `ncdump`. Confirm the host bind mount is
 present in both THREDDS and fileserver containers, read-only, and readable.
-Treat a healthy ESGF search response separately from indexing the synthetic
-dataset: do not claim indexing unless the dataset is registered and appears
-in the search results.
 
 ## 6. Test repeat-run behavior
 
 Once the deployment is complete, capture container IDs and status, run the
-same playbook again with the same OS-specific role path, then compare IDs and
-the second recap. This tests idempotence separately from first-run
-installation. Perform this only on the disposable test VM because a run may
-restart Docker or recreate containers and briefly interrupt service.
+same playbook again with the same upstream or issue-branch role path, then
+compare IDs and the second recap. This tests idempotence separately from
+first-run installation. Perform this only on the disposable test VM because
+a run may restart Docker or recreate containers and briefly interrupt service.
 
 Record whether containers were recreated, whether Docker restarted, and
 whether endpoint checks recovered. Do not infer repeat-run behavior from the
@@ -337,6 +330,8 @@ HTTP-only proxy guard; deployment passed (`ok=50`, `changed=26`,
 actionable findings are developed and verified on their individual fork
 branches. The fixture mount, THREDDS and fileserver access, file checksum,
 OPeNDAP, service endpoints, and repeat-run behavior passed verification. The
-repeat recreated all six service containers (`ok=50`, `changed=10`,
-`failed=0`, `skipped=30`). Detailed evidence is in the [deployment test
-results](./ansible-deployment-test-results.md#rocky-linux-98-data-serving-scenario--2026-10-30).
+repeat recreated all six containers configured in the historical
+mixed-service inventory (`ok=50`, `changed=10`, `failed=0`, `skipped=30`).
+These results are not a data-only baseline; repeat testing with the current
+data-only inventory is still needed. Detailed evidence is in the
+[deployment test results](./ansible-deployment-test-results.md#rocky-linux-98-data-serving-scenario--2026-10-30).
